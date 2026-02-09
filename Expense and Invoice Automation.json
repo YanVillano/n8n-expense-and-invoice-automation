@@ -1,0 +1,612 @@
+{
+  "name": "Expense and Invoice Automation",
+  "nodes": [
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "b5993394-410c-4d8d-8428-79c438cb5298",
+              "leftValue": "={{ $json.mimeType }}",
+              "rightValue": "=application/pdf",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "2a7e66d2-4ac0-422c-877d-8ce709731fb3",
+              "leftValue": "={{ $json.mimeType }}",
+              "rightValue": "pdf",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        208,
+        80
+      ],
+      "id": "18108490-97fa-439a-acc7-469905aca6a3",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "1ZnJBUhGKaDP5VumIbjGjquw7w-B6xiDM",
+          "mode": "list",
+          "cachedResultName": "Expense & Invoice Automation",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1ZnJBUhGKaDP5VumIbjGjquw7w-B6xiDM"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        80
+      ],
+      "id": "ca5e8666-5147-4fa6-a6b7-203fe0e6e134",
+      "name": "Google Drive Trigger Create",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "OZQR1J0X4jPQ8EIM",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        368,
+        -64
+      ],
+      "id": "1ed0afa8-e7ee-4dc3-9a78-f25ee7ed5dcc",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "OZQR1J0X4jPQ8EIM",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1B-tgg6YO43ua2ixuuG-09Anvt5uN3JyFEbjqBGXKW8Q",
+          "mode": "list",
+          "cachedResultName": "Expense & Invoice Automation",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1B-tgg6YO43ua2ixuuG-09Anvt5uN3JyFEbjqBGXKW8Q/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1B-tgg6YO43ua2ixuuG-09Anvt5uN3JyFEbjqBGXKW8Q/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Invoice Number": "={{ $json.invoiceNo }}",
+            "Vendor": "={{ $json.vendor }}",
+            "Date Created": "={{ $json.date }}",
+            "Due Date": "={{ $json.dueDate }}",
+            "Total": "={{ $json.total }}",
+            "Status": "={{ $json.status }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Invoice Number",
+              "displayName": "Invoice Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Vendor",
+              "displayName": "Vendor",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Date Created",
+              "displayName": "Date Created",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Due Date",
+              "displayName": "Due Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Total",
+              "displayName": "Total",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        960,
+        -64
+      ],
+      "id": "22e14328-ef72-47ef-a5cf-c4da766830ab",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "0ps8EHpt7X6qZq58",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "move",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Google Drive Trigger Create').item.json.id }}",
+          "mode": "id"
+        },
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1LX41sQe266lzCvIMnNxR6GIwAd-Uchja",
+          "mode": "list",
+          "cachedResultName": "Rejected Files",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1LX41sQe266lzCvIMnNxR6GIwAd-Uchja"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        368,
+        192
+      ],
+      "id": "3704b48b-be82-4c24-b443-25f253fb3c7b",
+      "name": "Move file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "OZQR1J0X4jPQ8EIM",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4.1-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "content": "You are an expense and invoice analyzer. Your task is to create invoice templates from the text of PDFs.\n\n- Input: a string containing the text of a PDF invoice.\n- Output: a JSON array with one object per invoice.\n- The JSON must always be valid.\n- Each invoice object must include:\n  - vendor (string)\n  - invoiceNo (number)\n  - date (string)\n  - dueDate (string)\n  - total (number)\n  - status (string)\n\nExample output:\n[\n  {\n    \"vendor\": \"VENDOR NAME\",\n    \"invoiceNo\": 39405,\n    \"date\": \"September/18/2026\",\n    \"dueDate\": \"September/25/2027\",\n    \"total\": 10000,\n    \"status\": \"Pending\"\n  }\n]\n"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        592,
+        -64
+      ],
+      "id": "cc9124ab-eab7-4e69-9e62-39bbf9458a0a",
+      "name": "Message a model",
+      "credentials": {
+        "openAiApi": {
+          "id": "fTs71rgLjUH5bWYL",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "Google Drive Trigger Node: \n- Watches file creation in the Expense and Invoice Automation Folder",
+        "height": 96
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -128,
+        -32
+      ],
+      "typeVersion": 1,
+      "id": "a5ce9007-7c41-41d9-84b3-e92dbb34d552",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "If Node:\n- Checks if the file uploaded in the Google Drive is a PDF or not",
+        "height": 96
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        112,
+        -32
+      ],
+      "typeVersion": 1,
+      "id": "65565747-324a-4987-ab8c-daeab2d3cd03",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "Google Drive Move FIle Node:\n- Moves a file from the Expense and Invoice Automation folder to the Rejected Files folder",
+        "height": 112
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        480,
+        112
+      ],
+      "typeVersion": 1,
+      "id": "3be9c55d-87b8-442f-9b34-dc555e38db71",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "Google Drive Download File Node:\n- Downloads the Created File",
+        "height": 96
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        288,
+        -176
+      ],
+      "typeVersion": 1,
+      "id": "cddf7812-1b6e-41a2-bbf6-b709b06c2190",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "OpenAI Node:\n- Analyzes the invoice. Which outputs the vendor, invoice number, date, due date, total, and status as JSON.",
+        "height": 128
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        576,
+        -208
+      ],
+      "typeVersion": 1,
+      "id": "ae4db1f5-4a15-47c1-aaa7-142a87021af3",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "Google Sheets Node:\n- Adds the final invoice to the sheet for logging.",
+        "height": 80
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        880,
+        -160
+      ],
+      "typeVersion": 1,
+      "id": "67fa1af6-e71d-47f8-bd5a-8b006b68ad82",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -16,
+        368
+      ],
+      "id": "80e95dcf-e1e6-4d0a-a9e3-ad32ecbd5f16",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1B-tgg6YO43ua2ixuuG-09Anvt5uN3JyFEbjqBGXKW8Q",
+          "mode": "list",
+          "cachedResultName": "Expense & Invoice Automation",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1B-tgg6YO43ua2ixuuG-09Anvt5uN3JyFEbjqBGXKW8Q/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1B-tgg6YO43ua2ixuuG-09Anvt5uN3JyFEbjqBGXKW8Q/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        176,
+        368
+      ],
+      "id": "a1a42e28-fb58-4258-8a50-42cc69dea53d",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "0ps8EHpt7X6qZq58",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get today's date at midnight\nconst today = new Date();\ntoday.setHours(0,0,0,0);\n\nconst result = [];\n\n$items().forEach(item => {\n    const inv = item.json;\n\n    // Skip if invoice is already paid\n    if(inv.Status && inv.Status.toLowerCase() === \"paid\") return;\n\n    // Parse due date\n    const dueDateStr = inv[\"Due Date\"];\n    const due = new Date(dueDateStr);\n    due.setHours(0,0,0,0); // normalize\n\n    // Calculate difference in days (integer)\n    const diffTime = due.getTime() - today.getTime();\n    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));\n\n    // Determine alert type\n    let alertType = null;\n    if(diffDays === 0) alertType = \"Due Today\";\n    else if(diffDays === 1) alertType = \"Due Tomorrow\";\n\n    if(alertType) {\n        result.push({\n            ...inv,\n            alertType\n        });\n    }\n});\n\n// Return items\nreturn result.map(item => ({ json: item }));\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        384,
+        368
+      ],
+      "id": "26e185c0-0817-4a83-a402-a47aceaefadb",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0AEMETHSNL",
+          "mode": "list",
+          "cachedResultName": "finance-due-invoices"
+        },
+        "text": "=:warning: *Invoice Alert*  Vendor: *{{$json[\"Vendor\"]}}* Invoice No: *{{$json[\"Invoice Number\"]}}* Due Date: *{{$json[\"Due Date\"]}}* Amount: *₱{{$json[\"Total\"]}}* Status: *{{$json[\"Status\"]}}* Alert Type: *{{$json[\"alertType\"]}}*  Please take necessary action.",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.4,
+      "position": [
+        592,
+        368
+      ],
+      "id": "995913cc-4979-4153-9e33-1886efae419b",
+      "name": "Send a message",
+      "webhookId": "15750e74-07d4-4d3e-ac61-9fe3fe5f9922",
+      "credentials": {
+        "slackOAuth2Api": {
+          "id": "Y0wrGLU8Zhw9Fcan",
+          "name": "Slack account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "Schedule Trigger Node:\n- Triggers the workflow every midnight",
+        "height": 96
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -144,
+        496
+      ],
+      "typeVersion": 1,
+      "id": "827d4619-6677-4fce-8b89-e40ad3a50e5b",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "content": "Google Sheets Get Row Node:\n- Fetches the data in google sheets",
+        "height": 80
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        112,
+        496
+      ],
+      "typeVersion": 1,
+      "id": "c5962010-ef6c-4793-832b-2b24cb454a55",
+      "name": "Sticky Note7"
+    },
+    {
+      "parameters": {
+        "content": "Function Node:\n- Checks if the due date is tomorrow. Outputs the invoices' data that has a due date tomorrow",
+        "height": 128
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        368,
+        496
+      ],
+      "typeVersion": 1,
+      "id": "2ac93e7f-dcd5-4abd-88ef-74fc0a45fb97",
+      "name": "Sticky Note8"
+    },
+    {
+      "parameters": {
+        "content": "Slack Send a message Node:\n- Sends the invoices with tomorrow due date to notify the team.",
+        "height": 112
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        624,
+        512
+      ],
+      "typeVersion": 1,
+      "id": "da738572-4e10-4f2e-8a5e-9b1cbee757f4",
+      "name": "Sticky Note9"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Drive Trigger Create": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Move file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "aff7da6c-6d9d-468a-8a45-75c61c4f7d24",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "51da36e14d282f96fa99554d3a706283144cf5354a057d2d1220bf8f99d36355"
+  },
+  "id": "8XMgmmtFu5MXKFatUiLPh",
+  "tags": []
+}
