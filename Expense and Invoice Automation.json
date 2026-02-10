@@ -195,7 +195,7 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        960,
+        1152,
         -64
       ],
       "id": "22e14328-ef72-47ef-a5cf-c4da766830ab",
@@ -254,7 +254,7 @@
         "responses": {
           "values": [
             {
-              "content": "You are an expense and invoice analyzer. Your task is to create invoice templates from the text of PDFs.\n\n- Input: a string containing the text of a PDF invoice.\n- Output: a JSON array with one object per invoice.\n- The JSON must always be valid.\n- Each invoice object must include:\n  - vendor (string)\n  - invoiceNo (number)\n  - date (string)\n  - dueDate (string)\n  - total (number)\n  - status (string)\n\nExample output:\n[\n  {\n    \"vendor\": \"VENDOR NAME\",\n    \"invoiceNo\": 39405,\n    \"date\": \"September/18/2026\",\n    \"dueDate\": \"September/25/2027\",\n    \"total\": 10000,\n    \"status\": \"Pending\"\n  }\n]\n"
+              "content": "=You are an expense and invoice analyzer. Your task is to create invoice templates from the text of PDFs.\n\n- Input: a string containing the text of a PDF invoice.\n- Output: a JSON array with one object per invoice.\n- The JSON must always be valid.\n- Each invoice object must include:\n  - vendor (string)\n  - invoiceNo (number)\n  - date (string)\n  - dueDate (string)\n  - total (number)\n  - status (string)\n\nExample output:\n[\n  {\n    \"vendor\": \"VENDOR NAME\",\n    \"invoiceNo\": 39405,\n    \"date\": \"September/18/2026\",\n    \"dueDate\": \"September/25/2027\",\n    \"total\": 10000,\n    \"status\": \"Pending\"\n  }\n]\n\nHere is the invoice text:\n\n{{$json.text}}\n"
             }
           ]
         },
@@ -264,15 +264,15 @@
       "type": "@n8n/n8n-nodes-langchain.openAi",
       "typeVersion": 2.1,
       "position": [
-        592,
+        688,
         -64
       ],
       "id": "cc9124ab-eab7-4e69-9e62-39bbf9458a0a",
       "name": "Message a model",
       "credentials": {
         "openAiApi": {
-          "id": "fTs71rgLjUH5bWYL",
-          "name": "OpenAi account"
+          "id": "eOwF2Fr69DHrJA27",
+          "name": "n8n free OpenAI API credits"
         }
       }
     },
@@ -339,7 +339,7 @@
       },
       "type": "n8n-nodes-base.stickyNote",
       "position": [
-        576,
+        688,
         -208
       ],
       "typeVersion": 1,
@@ -353,7 +353,7 @@
       },
       "type": "n8n-nodes-base.stickyNote",
       "position": [
-        880,
+        1136,
         -160
       ],
       "typeVersion": 1,
@@ -507,6 +507,33 @@
       "typeVersion": 1,
       "id": "da738572-4e10-4f2e-8a5e-9b1cbee757f4",
       "name": "Sticky Note9"
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        512,
+        -64
+      ],
+      "id": "4407f98b-e04f-4aa8-be0e-1b5f648356a0",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "jsCode": "// OpenAI output text (string)\nconst textOutput = $json.output[0].content[0].text;\n\n// Parse string to JSON array\nlet invoices;\ntry {\n  invoices = JSON.parse(textOutput);\n} catch (err) {\n  throw new Error(\"OpenAI output is not valid JSON: \" + err);\n}\n\n// Wrap each invoice in { json: ... } so n8n accepts it\nreturn invoices.map(invoice => ({ json: invoice }));\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        992,
+        -64
+      ],
+      "id": "ee37b971-3b62-4f66-9c58-a13cddb29ea3",
+      "name": "Code in JavaScript1"
     }
   ],
   "pinData": {},
@@ -544,7 +571,7 @@
       "main": [
         [
           {
-            "node": "Message a model",
+            "node": "Extract from File",
             "type": "main",
             "index": 0
           }
@@ -555,7 +582,7 @@
       "main": [
         [
           {
-            "node": "Append row in sheet",
+            "node": "Code in JavaScript1",
             "type": "main",
             "index": 0
           }
@@ -594,6 +621,28 @@
           }
         ]
       ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": false,
@@ -602,7 +651,7 @@
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "aff7da6c-6d9d-468a-8a45-75c61c4f7d24",
+  "versionId": "088cc041-5ebc-4ecc-9f26-25ca46016351",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "51da36e14d282f96fa99554d3a706283144cf5354a057d2d1220bf8f99d36355"
